@@ -66,7 +66,8 @@ writematrix([(1:NUM_NODES)' (1:NUM_NODES)'], ...
 %% run svinet and recover communities
 
 rng(123)
-thr_vals = 0.05:0.01:0.15;
+%thr_vals = 0.05:0.01:0.15;
+thr_vals = 0.1 ;
 
 for thrIdx = 1:length(thr_vals) 
 
@@ -167,6 +168,6 @@ for thrIdx = 1:length(thr_vals)
     %% save results
 
     save([ OUTDIR_PROC '/agmfit_overlapcomms_' PARC_STR '_thr' sprintf('%0.2f',dat_thr) '_networks.mat' ],...
-        'agmfit_comms','agmfit_groups','agmfit_cent','centind') ;
+        'agmfit_*','centind') ;
 
 end

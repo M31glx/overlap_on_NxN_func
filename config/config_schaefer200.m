@@ -32,5 +32,5 @@ OUTDIR_PROC = strcat(OUTDIR, '/processed/' ) ;
 PARC_STR = 'schaefer200-yeo17' ;
 NUM_NODES = 200 ; 
 
-
+COMM_PROB_THR = 0.05 ;
 

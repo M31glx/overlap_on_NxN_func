@@ -37,7 +37,7 @@ for idx = 1:numRun
         [p,g] = commDetNMF(inputMat,ncommunities) ;
         
         %outComm = comms_cell_2_mat(g,NUM_NODES) ;
-        outComm = p>0.25 ;
+        outComm = p>COMM_PROB_THR ;
 
         if size(outComm,2) == ncommunities && (sum(sum(outComm) == 0) == 0)             
             comm_bool = false ;

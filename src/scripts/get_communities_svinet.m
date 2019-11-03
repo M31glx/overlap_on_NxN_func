@@ -63,13 +63,14 @@ svinet_groups = cell(numRun,1) ;
 svinet_comms = cell(numRun,1) ;
 
 for idx = 1:numRun 
-
+    disp(idx)
+    
     tmpDir = strcat(OUTDIR_INTERM,'/tempDir/') ;
     mkdir(tmpDir) 
     cd(tmpDir)
 
     % run the command
-    system([ exe_call ' -seed ' num2str(randi(1000)) ])
+    [~,~] = system([ exe_call ' -seed ' num2str(randi(1000)) ]) ;
 
     outDir = dir([tmpDir '/n*']) ; 
     %outDir(1:2) = [] ;
@@ -83,14 +84,15 @@ for idx = 1:numRun
     svinet_groups{idx} = outGroup ;
 
     % communities data
-    outCommPath = [ outDir.folder '/' outDir.name '/communities.txt' ] ;
-%     outComm = table2cell(readtable(outCommPath,'ReadVariableNames',0)) ;
-%     outComm = cellfun(@(a)str2num(a),outComm,'UniformOutput',false) ;
-%     outComm = comms_cell_2_mat(outComm,NUM_NODES) ;
-    outComm = dlmread(outCommPath) ;
-    outComm = comms_mat_2_mat(outComm,NUM_NODES) ;
-    svinet_comms{idx} = outComm ; 
-    
+%     outCommPath = [ outDir.folder '/' outDir.name '/communities.txt' ] ;
+% %     outComm = table2cell(readtable(outCommPath,'ReadVariableNames',0)) ;
+% %     outComm = cellfun(@(a)str2num(a),outComm,'UniformOutput',false) ;
+% %     outComm = comms_cell_2_mat(outComm,NUM_NODES) ;
+%     outComm = dlmread(outCommPath) ;
+%     outComm = comms_mat_2_mat(outComm,NUM_NODES) ;
+%     svinet_comms{idx} = outComm ;     
+    svinet_comms{idx} = outGroup > COMM_PROB_THR ;    
+
     cd(PROJECT_DIR)    
     rmdir(tmpDir,'s')
 
@@ -153,11 +155,11 @@ svinet_cent = svinet_comms{centind} ;
 % end
 
 %% look at it
-
-for idx = 1:numRun
-imagesc(svinet_groups_align{idx})
-waitforbuttonpress
-end
+ 
+% for idx = 1:numRun
+% imagesc(svinet_groups_align{idx})
+% waitforbuttonpress
+% end
 
 %% make an agreement
 
@@ -174,7 +176,7 @@ end
 
 %% save results
 
-save([ OUTDIR_PROC '/overlapcomms_' PARC_STR '_thr' sprintf('%0.2f',dat_thr) '_networks.mat' ],...
+save([ OUTDIR_PROC '/svinet_overlapcomms_' PARC_STR '_thr' sprintf('%0.2f',dat_thr) '_networks.mat' ],...
     'svinet_comms','svinet_groups','svinet_cent','centind') ;
 
 
