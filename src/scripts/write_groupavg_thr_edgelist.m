@@ -16,7 +16,7 @@ rho = triu(dat.rho,1) + triu(dat.rho,1)' ;
 
 %% get different thrs
 
-thr_vals = 0.05:0.01:0.15;
+thr_vals = 0.1:0.1:0.5;
 thr_networks = cell(length(thr_vals),1) ;
 
 % get min span tree
