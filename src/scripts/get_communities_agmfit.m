@@ -65,9 +65,15 @@ writematrix([(1:NUM_NODES)' (1:NUM_NODES)'], ...
 
 %% run svinet and recover communities
 
+loadDat = load([ OUTDIR_PROC '/groupavg_' PARC_STR '_thr_networks.mat' ]) ;
+
+% thr_edgelists = loadDat.thr_edgelists ;
+% thr_networks = loadDat.thr_networks ;
+thr_vals = loadDat.thr_vals ;
+
 rng(123)
 %thr_vals = 0.05:0.01:0.15;
-thr_vals = 0.1 ;
+% thr_vals = 0.1 ;
 
 for thrIdx = 1:length(thr_vals) 
 
@@ -82,10 +88,9 @@ for thrIdx = 1:length(thr_vals)
         ' -l:', labnamefile, ...
         ' -c:', num2str(ncommunities) ) ;
 
-    numRun = 100 ;
-    agmfit_comms = cell(numRun,1) ;
+    agmfit_comms = cell(NUM_RUN,1) ;
 
-    for idx = 1:numRun 
+    for idx = 1:NUM_RUN 
         disp(idx)
 
         tmpDir = strcat(OUTDIR_INTERM,'/tempDir/') ;
@@ -113,16 +118,16 @@ for thrIdx = 1:length(thr_vals)
     mkdir(tempdir)
 
     % first write out all the files
-    for idx = 1:numRun
+    for idx = 1:NUM_RUN
         disp(idx)
         write_comms(agmfit_comms{idx},[ tempdir '/comm' num2str(idx) '.txt'])
     end
 
     % now compare all communities
-    ovrmutinfomat = zeros(numRun) ;
+    ovrmutinfomat = zeros(NUM_RUN) ;
     mutexe = [ PROJECT_DIR '/src/external/mutual3/mutual' ] ;
-    for idx = 1:numRun
-       for jdx = 1:numRun
+    for idx = 1:NUM_RUN
+       for jdx = 1:NUM_RUN
            if idx >= jdx
                continue
            else
@@ -140,24 +145,24 @@ for thrIdx = 1:length(thr_vals)
     rmdir(tempdir,'s')
 
     %  find the centroid
-    simmat = ovrmutinfomat + ovrmutinfomat' ;
-    [~,centind] = max(sum(simmat)) ;
+    agmfit_simmat = ovrmutinfomat + ovrmutinfomat' ;
+    [~,centind] = max(sum(agmfit_simmat)) ;
 
     agmfit_cent = agmfit_comms{centind} ;
 
 %     %% look at it
 % 
-%     for idx = 1:numRun
+%     for idx = 1:NUM_RUN
 %     imagesc(agmfit_comms{idx})
 %     waitforbuttonpress
 %     end
 
     %% make an agreement
 
-    agree_dat = zeros(NUM_NODES,NUM_NODES,numRun) ;
-    agreew_dat = zeros(NUM_NODES,NUM_NODES,numRun) ;
+    agree_dat = zeros(NUM_NODES,NUM_NODES,NUM_RUN) ;
+    agreew_dat = zeros(NUM_NODES,NUM_NODES,NUM_RUN) ;
 
-    for idx = 1:numRun
+    for idx = 1:NUM_RUN
         disp(idx)
 
         agreew_dat(:,:,idx) = agmfit_comms{idx} * agmfit_comms{idx}' ;

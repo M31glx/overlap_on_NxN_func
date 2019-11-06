@@ -38,15 +38,15 @@ binpath = '/usr/local/bin/svinet' ;
 % 	-seed		set GSL random generator seed
 % 	-gml		generate a GML format file that visualizes link communities
 
-maxiters = 500 ;
+maxiters = 250 ;
 ncommunities = 10 ;
 
 %% run svinet and recover communities
 
 loadDat = load([ OUTDIR_PROC '/groupavg_' PARC_STR '_thr_networks.mat' ]) ;
 
-thr_edgelists = loadDat.thr_edgelists ;
-thr_networks = loadDat.thr_networks ;
+% thr_edgelists = loadDat.thr_edgelists ;
+% thr_networks = loadDat.thr_networks ;
 thr_vals = loadDat.thr_vals ;
 
 rng(123)
@@ -66,11 +66,10 @@ for thrIdx = 1:length(thr_vals)
         ' -max-iterations', 32, num2str(maxiters),...
         ' -link-sampling -no-stop ' ) ;
 
-    numRun = 100 ;
-    svinet_groups = cell(numRun,1) ;
-    svinet_comms = cell(numRun,1) ;
+    svinet_groups = cell(NUM_RUN,1) ;
+    svinet_comms = cell(NUM_RUN,1) ;
 
-    for idx = 1:numRun 
+    for idx = 1:NUM_RUN 
         disp(idx)
 
         tmpDir = strcat(OUTDIR_INTERM,'/tempDir/') ;
@@ -113,16 +112,16 @@ for thrIdx = 1:length(thr_vals)
     mkdir(tempdir)
 
     % first write out all the files
-    for idx = 1:numRun
+    for idx = 1:NUM_RUN
         disp(idx)
         write_comms(svinet_comms{idx},[ tempdir '/comm' num2str(idx) '.txt'])
     end
 
     % now compare all communities
-    ovrmutinfomat = zeros(numRun) ;
+    ovrmutinfomat = zeros(NUM_RUN) ;
     mutexe = [ PROJECT_DIR '/src/external/mutual3/mutual' ] ;
-    for idx = 1:numRun
-       for jdx = 1:numRun
+    for idx = 1:NUM_RUN
+       for jdx = 1:NUM_RUN
            if idx >= jdx
                continue
            else
@@ -140,8 +139,8 @@ for thrIdx = 1:length(thr_vals)
     rmdir(tempdir,'s')
 
     %  find the centroid
-    simmat = ovrmutinfomat + ovrmutinfomat' ;
-    [~,centind] = max(sum(simmat)) ;
+    svinet_simmat = ovrmutinfomat + ovrmutinfomat' ;
+    [~,centind] = max(sum(svinet_simmat)) ;
 
     svinet_cent = svinet_comms{centind} ;
 
@@ -151,9 +150,9 @@ for thrIdx = 1:length(thr_vals)
 
     % [~,svinet_cent_greedy] = max(svinet_groups{maxind},[],2) ;
     % 
-    % svinet_groups_align = cell(numRun,1) ;
+    % svinet_groups_align = cell(NUM_RUN,1) ;
     % % align all comms to the cent_greedy
-    % for idx = 1:numRun
+    % for idx = 1:NUM_RUN
     %     disp(idx)
     %     
     %     [~,tmpGreedyComms] = max(svinet_groups{idx},[],2) ;
@@ -164,17 +163,17 @@ for thrIdx = 1:length(thr_vals)
 
     %% look at it
 
-    % for idx = 1:numRun
+    % for idx = 1:NUM_RUN
     % imagesc(svinet_groups_align{idx})
     % waitforbuttonpress
     % end
 
     %% make an agreement
 
-    agree_dat = zeros(NUM_NODES,NUM_NODES,numRun) ;
-    agreew_dat = zeros(NUM_NODES,NUM_NODES,numRun) ;
+    agree_dat = zeros(NUM_NODES,NUM_NODES,NUM_RUN) ;
+    agreew_dat = zeros(NUM_NODES,NUM_NODES,NUM_RUN) ;
 
-    for idx = 1:numRun
+    for idx = 1:NUM_RUN
         disp(idx)
 
         agreew_dat(:,:,idx) = svinet_comms{idx} * svinet_comms{idx}' ;
@@ -185,7 +184,7 @@ for thrIdx = 1:length(thr_vals)
     %% save results
 
     save([ OUTDIR_PROC '/svinet_overlapcomms_' PARC_STR '_thr' sprintf('%0.2f',dat_thr) '_networks.mat' ],...
-        'svinet_comms','svinet_groups','svinet_cent','centind') ;
+        'svinet_*','centind') ;
 end
 
 
