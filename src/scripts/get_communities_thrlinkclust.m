@@ -28,17 +28,14 @@ ncommunities = 10 ;
 thrlink_comms = cell(NUM_RUN,1) ;
 thrlink_wcomms = cell(NUM_RUN,1) ;
 
-%thr_vals = 0.05:0.01:0.15;
-%thr_vals = 0.1 ;
-
-for thrIdx = 2:length(thr_vals) 
+for thrIdx = 1:length(thr_vals) 
     
     % make input mat into a line graph, and then make into mod mat
     [lg,~,u,v] = fcn_line_graph(thr_networks{thrIdx}); % calculate line graph
     m = size(lg,1) ;
 
     % first need to do gamma sweep
-    initgamas = 0.1:0.01:6 ;
+    initgamas = 0.1:0.01:10 ;
     sweepComs = zeros(m,length(initgamas)) ; 
     for idx = 1:length(initgamas)
          % newman girvan mod
@@ -47,7 +44,7 @@ for thrIdx = 2:length(thr_vals)
         % early stopping criteria
         tmpnumcoms = max(sweepComs(:,idx)) ;
         disp(tmpnumcoms)
-        if tmpnumcoms >= ncommunities + 5
+        if tmpnumcoms >= ncommunities + 4
             break
         end
     end
