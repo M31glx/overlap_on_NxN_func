@@ -113,19 +113,8 @@ for thrIdx = 1:length(thr_vals)
 
     %% now get the centroid using 
 
-    % make a temp dir
-    tempdir = strcat(OUTDIR_INTERM,'/tempcomms/') ;
-    mkdir(tempdir)
-
-    % first write out all the files
-    for idx = 1:NUM_RUN
-        disp(idx)
-        write_comms(agmfit_comms{idx},[ tempdir '/comm' num2str(idx) '.txt'])
-    end
-
     % now compare all communities
     ovrmutinfomat = zeros(NUM_RUN) ;
-    mutexe = [ PROJECT_DIR '/src/external/mutual3/mutual' ] ;
     for idx = 1:NUM_RUN
        for jdx = 1:NUM_RUN
            if idx >= jdx
@@ -133,16 +122,11 @@ for thrIdx = 1:length(thr_vals)
            else
                disp([num2str(idx) ' ' num2str(jdx)])
            end
-
-           file1 = [ tempdir '/comm' num2str(idx) '.txt'] ;
-           file2 = [ tempdir '/comm' num2str(jdx) '.txt'] ;      
-
-           [a,b] = system([ mutexe ' ' file1 ' ' file2 ' | awk  ''{print $2}'' ']) ;
-           ovrmutinfomat(idx,jdx) = str2double(b) ;
-       end
+           
+           ovrmutinfomat(idx,jdx) = gnmi(agmfit_comms{idx},agmfit_comms{jdx},NUM_NODES) ;
+           
+        end
     end
-
-    rmdir(tempdir,'s')
 
     %  find the centroid
     agmfit_simmat = ovrmutinfomat + ovrmutinfomat' ;
