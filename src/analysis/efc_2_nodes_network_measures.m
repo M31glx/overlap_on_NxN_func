@@ -32,7 +32,6 @@ einds = [ii,iii] ;
 
 node_mask = logical(triu(ones(NUM_NODES),1)) ;
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% strengths
 efc_str = strengths_und(efcmat)' ;
@@ -51,11 +50,13 @@ nefc_neg_top = map_efcnodemeas_2_edges(bttmefc,NUM_NODES) ;
 
 cmap = flipud(brewermap(256,'Spectral')) ;
 
+%%
 % look at strength, look at pos/negative
 figure
-set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.5, 0.5]);
+set(gcf, 'Units', 'Normalized', 'Position', [0, 0, 0.6, 0.5]);
 
-ts = tight_subplot(2,3) ;
+% function [ha, pos] = tight_subplot(Nh, Nw, gap, marg_h, marg_w)
+ts = tight_subplot(2,3,0.1,[0.1 0.05]) ;
 axes(ts(1))
 imsc_grid_comm(nefc_str,loadLabs.lab,2,[ 0 0 0 ]) ; 
 colormap(gca,cmap) 
@@ -169,6 +170,10 @@ axis square
 xlabel('Overall participation coeff')
 ylabel('Module degree zscore') 
 
+%% package it up
+
+save([ OUTDIR_PROC '/efc_2_nodes_net_meas_' PARC_STR '.mat' ] ,...
+    'nefc_*','efc_*','efcmat','nfcmat','-v7.3')
 
 
 
