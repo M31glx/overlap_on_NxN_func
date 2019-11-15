@@ -9,7 +9,7 @@ run(config_file) ;
 
 %% load up thresholded network 
 
-thresholds = [ 0.1 0.2 0.3 ] ;
+thresholds = [ 0.1 0.2 0.3 0.4 0.5 ] ;
 loadDat = struct() ;
     
 for idx = 1:length(thresholds) 
@@ -111,7 +111,7 @@ capitl = @(x) [upper(x(1)) x(2:end)] ;
 
 % function [ha, pos] = tight_subplot(Nh, Nw, gap, marg_h, marg_w)
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 0.4 0.6]);      
-ts = tight_subplot(1,3) ;
+ts = tight_subplot(1,length(thresholds)) ;
 
 for idx = 1:length(thresholds)
 
@@ -126,7 +126,7 @@ for idx = 1:length(thresholds)
     set(gca,'XTickLabel', [ 'eFC' fliplr(cellfun(capitl,methodstr,'UniformOutput',false))])
     xtickangle(45)
     colorbar()
-    caxis([0 1])
+    caxis([-0.5 1])
     title(['Threshold ' num2str(thresholds(idx))])
 
     axis square
@@ -187,3 +187,14 @@ for idx = fliplr(1:4)
 
     
 end
+
+%% package data
+
+overlapMetricOthrAlgs = ovrRes ;
+overlapComms = loadDat ;
+efcEnt = loadEnt ;
+
+save([OUTDIR_PROC '/overlap_metrics_otherAlgs_' PARC_STR '.mat'],...
+    'overlapMetricOthrAlgs','overlapComms',...
+    'thresholds','efcEnt','-v7.3')
+
