@@ -13,7 +13,7 @@ loadDat = load([ OUTDIR_PROC '/groupavg_' PARC_STR '_thr_networks.mat' ]) ;
 
 thr_edgelists = loadDat.thr_edgelists ;
 thr_networks = loadDat.thr_networks ;
-thr_vals = loadDat.thr_vals ;
+thr_vals = loadDat.thr_vals(1:4) ;
 
 %% inline func
 
@@ -34,34 +34,37 @@ for thrIdx = 1:length(thr_vals)
     [lg,~,u,v] = fcn_line_graph(thr_networks{thrIdx}); % calculate line graph
     m = size(lg,1) ;
 
-    % first need to do gamma sweep
-    initgamas = 0.1:0.01:10 ;
-    sweepComs = zeros(m,length(initgamas)) ; 
-    for idx = 1:length(initgamas)
-         % newman girvan mod
-        b = modularity(lg,initgamas(idx)) ;       
-        sweepComs(:,idx) = genlouvain(b,[],false);
-        % early stopping criteria
-        tmpnumcoms = max(sweepComs(:,idx)) ;
-        disp(tmpnumcoms)
-        if tmpnumcoms >= ncommunities + 4
-            break
-        end
-    end
+%     % first need to do gamma sweep
+%     initgamas = 0.1:0.01:10 ;
+%     sweepComs = zeros(m,length(initgamas)) ; 
+%     for idx = 1:length(initgamas)
+%          % newman girvan mod
+%         b = modularity(lg,initgamas(idx)) ;       
+%         sweepComs(:,idx) = genlouvain(b,[],false);
+%         % early stopping criteria
+%         tmpnumcoms = max(sweepComs(:,idx)) ;
+%         disp(tmpnumcoms)
+%         if tmpnumcoms >= ncommunities + 4
+%             break
+%         end
+%     end
+% 
+%     % get num coms at each sweep iteration 
+%     numCrossGam = max(sweepComs)' ;
+%     kInd = find(numCrossGam == ncommunities) ;
+% 
+%     if isempty(kInd) || (kInd(1) == kInd(end))
+%        error('gamma range not big enough') 
+%     end
 
-    % get num coms at each sweep iteration 
-    numCrossGam = max(sweepComs)' ;
-    kInd = find(numCrossGam == ncommunities) ;
-
-    if isempty(kInd) || (kInd(1) == kInd(end))
-       error('gamma range not big enough') 
-    end
+    % function [ gammarange ] = sweep_gamma(W,k,initgamma,modfunc,kbuff)
+    grange = sweep_gamma(lg,ncommunities,1:0.01:10)  ;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % now run it 
     
     % new gamma range
-    startG = initgamas(kInd(1)) ; endG = initgamas(kInd(end)) ;
+    startG = grange(1) ; endG = grange(2) ;
     gammas = randsamprange(startG,endG,NUM_RUN) ;
     
     % preallocations
@@ -86,7 +89,7 @@ for thrIdx = 1:length(thr_vals)
         b = modularity(lg,gammas(idx)) ;       
         [ci(:,idx),q(idx)] = genlouvain(b,[],false);
         
-        if ci(:,idx) ~= ncommunities
+        if max(ci(:,idx)) ~= ncommunities
            lattempt = lattempt + 1 ;
            continue
         else % sucessfull iter
