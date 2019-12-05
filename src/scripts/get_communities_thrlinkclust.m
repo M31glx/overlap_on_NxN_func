@@ -28,7 +28,7 @@ ncommunities = 10 ;
 thrlink_comms = cell(NUM_RUN,1) ;
 thrlink_wcomms = cell(NUM_RUN,1) ;
 
-for thrIdx = 1:length(thr_vals) 
+for thrIdx = 2:length(thr_vals) 
     
     % make input mat into a line graph, and then make into mod mat
     [lg,~,u,v] = fcn_line_graph(thr_networks{thrIdx}); % calculate line graph
@@ -58,7 +58,7 @@ for thrIdx = 1:length(thr_vals)
 %     end
 
     % function [ gammarange ] = sweep_gamma(W,k,initgamma,modfunc,kbuff)
-    grange = sweep_gamma(lg,ncommunities,1:0.01:10)  ;
+    grange = sweep_gamma(lg,ncommunities)  ;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % now run it 

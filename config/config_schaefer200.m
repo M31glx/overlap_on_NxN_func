@@ -34,6 +34,9 @@ DB_HCP_OUTPUT = '/output+r1/hcp-detrend/' ;
 
 ENTROPY_RES = 'rest/group+average+matrix/kmeans/group+average_k010_f0050.mat' ;
 
+PDF_FIG_DIR = [ PROJECT_DIR '/reports/pdf/' ] ;
+mkdir(PDF_FIG_DIR) 
+
 %% vars 
 
 PARC_STR = 'schaefer200-yeo17' ;

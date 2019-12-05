@@ -18,7 +18,7 @@ loadEFCcomms = load([ OUTDIR_PROC '/consensus_communities_all_schaefer200-yeo17.
 efcmat = loadEFC.rho + loadEFC.rho';
 [~,sortLabs] = sort(loadLabs.lab) ;
 
-nfcmat = loadNFC.rho + loadNFC.rho' ;
+nfcmat = triu(loadNFC.rho,1) + triu(loadNFC.rho,1)' ;
 
 % get some indexing
 n = NUM_NODES;
@@ -49,6 +49,25 @@ nefc_pos_top = map_efcnodemeas_2_edges(topefc,NUM_NODES) ;
 nefc_neg_top = map_efcnodemeas_2_edges(bttmefc,NUM_NODES) ;
 
 cmap = flipud(brewermap(256,'Spectral')) ;
+
+%% get system inds systems
+
+% function [ comm_einds, within_inds, btwn_inds ] = efccomms_assignments(einds,ci)
+[ yeo_einds , yeo_within , yeo_btwn ] = efccomms_assignments(einds,loadLabs.lab) ;
+
+nComms = length(loadLabs.net) ;
+
+% make a block matrix 
+for idx = 1:nComms
+    
+    ind = ~~yeo_btwn(:,idx) | ~~yeo_within(:,idx) ;
+        
+    imagesc(efcmat(ind,ind),[ -0.5 0.5]) ; 
+    colorbar ; 
+    title(loadLabs.net{idx}) ; 
+    waitforbuttonpress
+ 
+end
 
 %%
 % look at strength, look at pos/negative
@@ -118,11 +137,6 @@ imsc_grid_comm(nefc_neg_cc,loadLabs.lab) ; colorbar ; caxis([0 0.08]);
 axis square ; set(gca,'YTickLabel',[]);
 title('Negative clustering coef')
 
-%% get system inds systems
-
-% function [ comm_einds, within_inds, btwn_inds ] = efccomms_assignments(einds,ci)
-[ yeo_einds , yeo_within , yeo_btwn ] = efccomms_assignments(einds,loadLabs.lab) ;
-
 %% get some community metrics
 
 % comm assignments for each edge, k=10, first layer is hcp
@@ -175,6 +189,12 @@ ylabel('Module degree zscore')
 save([ OUTDIR_PROC '/efc_2_nodes_net_meas_' PARC_STR '.mat' ] ,...
     'nefc_*','efc_*','efcmat','nfcmat','-v7.3')
 
+%%
+
+figure ; sc = scatter(nfcmat(node_mask),nfc_simmat(node_mask),[],nefc_pos_str(node_mask),'filled')
+sc.MarkerFaceAlpha = 0.2 ;
+figure ; sc = scatter(nfcmat(node_mask),nfc_simmat(node_mask),[],nefc_neg_str(node_mask),'filled')
+sc.MarkerFaceAlpha = 0.2 ;
 
 
 
