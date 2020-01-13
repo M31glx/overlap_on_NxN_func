@@ -128,30 +128,6 @@ for thrIdx = 1:length(thr_vals)
 
     svinet_cent = svinet_comms{centind} ;
 
-    %% try to algin all the comms
-
-    % didn't work, doesn't look good...
-
-    % [~,svinet_cent_greedy] = max(svinet_groups{maxind},[],2) ;
-    % 
-    % svinet_groups_align = cell(NUM_RUN,1) ;
-    % % align all comms to the cent_greedy
-    % for idx = 1:NUM_RUN
-    %     disp(idx)
-    %     
-    %     [~,tmpGreedyComms] = max(svinet_groups{idx},[],2) ;
-    %     [~,reorder] = hungarianMatch(svinet_cent_greedy,tmpGreedyComms) ;
-    %     
-    %     svinet_groups_align{idx} = svinet_groups{idx}(:,reorder) ;
-    % end
-
-    %% look at it
-
-    % for idx = 1:NUM_RUN
-    % imagesc(svinet_groups_align{idx})
-    % waitforbuttonpress
-    % end
-
     %% make an agreement
 
     agree_dat = zeros(NUM_NODES,NUM_NODES,NUM_RUN) ;
